@@ -1,0 +1,18 @@
+/**
+ * HalfAdder.hdl
+ * 
+ * Implements a Half Adder gate.
+ * A Half Adder adds two bits and produces a sum and a carry bit.
+ */
+
+CHIP HalfAdder {
+    IN a, b;    // 1-bit inputs
+    OUT sum, carry; // 1-bit outputs
+
+    PARTS:
+    // XOR gate for sum
+    Xor(a=a, b=b, out=sum);
+    
+    // AND gate for carry
+    And(a=a, b=b, out=carry);
+}

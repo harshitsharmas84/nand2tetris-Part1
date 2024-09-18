@@ -1,0 +1,49 @@
+/**
+ * ALU.hdl
+ * The ALU (Arithmetic Logic Unit) computes a set of functions on its two 16-bit inputs, 
+ * as specified below. The ALU logic manipulates the two 16-bit inputs x and y and 
+ * computes a 16-bit output out and a 1-bit output zr and ng.
+ */
+
+CHIP ALU {
+    IN  x[16], y[16], zx, nx, zy, ny, f, no;
+    OUT out[16], zr, ng;
+
+    PARTS:
+    // Zero x if zx is 1
+    Mux16(a=x, b=false, sel=zx, out=xZeroed);
+    
+    // Negate x if nx is 1
+    Not16(in=xZeroed, out=notXZeroed);
+    Mux16(a=xZeroed, b=notXZeroed, sel=nx, out=xProcessed);
+
+    // Zero y if zy is 1
+    Mux16(a=y, b=false, sel=zy, out=yZeroed);
+    
+    // Negate y if ny is 1
+    Not16(in=yZeroed, out=notYZeroed);
+    Mux16(a=yZeroed, b=notYZeroed, sel=ny, out=yProcessed);
+
+    // Function: if f is 1 compute x + y, else compute x & y
+    Add16(a=xProcessed, b=yProcessed, out=xySum);
+    And16(a=xProcessed, b=yProcessed, out=xyAnd);
+    Mux16(a=xyAnd, b=xySum, sel=f, out=outF);
+
+    // Negate the output if no is 1
+    Not16(in=outF, out=notOutF);
+    Mux16(a=outF, b=notOutF, sel=no, out=out);
+
+    // Compute if the output is zero
+    Or8Way(in=out[0..7], out=or1);
+    Or8Way(in=out[8..15], out=or2);
+    Or(a=or1, b=or2, out=or3);
+    Not(in=or3, out=zr);
+
+   // Compute if the output is negative
+    Not(in=out[15], out=ng);
+}
+
+
+
+
+
